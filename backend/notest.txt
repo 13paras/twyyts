@@ -1,0 +1,19 @@
+STEPS TO START NODE TYPESCRIPT PROJECT
+
+1- npm init -y
+2- npm install @types/node typescript --save-dev
+3- nano tsconfig.json
+   Paste this -> 
+   {
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es6",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist"
+  },
+  "lib": ["es2015"]
+}
+
+4- npm init @eslint/config
