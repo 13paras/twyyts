@@ -11,8 +11,10 @@ app.use(cookieParser());
 
 // Router
 import { router as userRouter } from './routes/user.routes';
+import { router as authRouter } from './routes/auth.routes';
 import { globalErrorHandler } from './middlewares/errorHandler.middleware';
 
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
 
 // Error Handlers

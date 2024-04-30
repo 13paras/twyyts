@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
 const signupBody = z.object({
-  name: z.string(),
+  username: z.string(),
+  fullName: z.string(),
   email: z.string().email(),
   password: z.string().min(6, 'Password must be at least 6 characters long'),
 });
@@ -9,7 +10,8 @@ const signupBody = z.object({
 type SignupBody = z.infer<typeof signupBody>;
 
 const signinBody = z.object({
-  email: z.string().email(),
+  username: z.string().optional(),
+  email: z.string().email().optional(),
   password: z.string().min(6, 'Password must be at least 6 characters long'),
 });
 

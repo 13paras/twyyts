@@ -24,10 +24,15 @@ export const verifyToken = asyncHandler(
         config.JWT_SECRET_KEY as string
       ) as JwtPayload;
 
+      if (!decodedTokenInfo) {
+        const error = createHttpError(401, 'Invalid Token');
+        return next(error);
+      }
+
       const user = await User.findById(decodedTokenInfo?.userId);
 
       if (!user) {
-        const error = createHttpError(401, 'Invalid Token');
+        const error = createHttpError(404, 'User not found');
         return next(error);
       }
 

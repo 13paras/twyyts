@@ -2,7 +2,9 @@ import { Schema, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 interface User extends Document {
-  name: string;
+  username: string;
+  fullName: string;
+  followers: Array<Object>
   email: string;
   password: string;
   matchPassword(password: string): Promise<boolean>;
@@ -10,38 +12,54 @@ interface User extends Document {
 
 const userSchema = new Schema(
   {
-    name: {
+    username: {
       type: String,
       required: true,
-      trim: true,
-      lowercase: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      trim: true,
       unique: true,
-      lowercase: true,
+      trim: true,
     },
-    avatar: {
+    fullName: {
       type: String,
+      required: true,
+      trim: true,
     },
     password: {
       type: String,
       required: true,
-      trim: true,
+      minLength: 6,
     },
-    address: {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    followers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        default: [],
+      },
+    ],
+    following: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        default: [],
+      },
+    ],
+    profileImg: {
+      type: String,
+      default: '',
+    },
+    coverImg: {
+      type: String,
+      default: '',
+    },
+    bio: {
       type: String,
       trim: true,
+      default: '',
     },
-    city: {
-      type: String,
-    },
-    state: {
-      // Write a model for user using twitter model
-      
-    }
   },
   {
     timestamps: true,
