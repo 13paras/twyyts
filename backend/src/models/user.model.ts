@@ -1,12 +1,17 @@
-import { Schema, model } from 'mongoose';
+import { Schema, Types, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 interface User extends Document {
   username: string;
   fullName: string;
-  followers: Array<Object>
+  followers: Array<Types.ObjectId>
+  following: Array<Types.ObjectId>
+  profileImg: string;
+  coverImg: string;
   email: string;
   password: string;
+  bio: string,
+  link: string
   matchPassword(password: string): Promise<boolean>;
 }
 

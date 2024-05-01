@@ -18,6 +18,6 @@ const router = express.Router();
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.post('/logout', logoutUser);
-router.route('/me').get(verifyToken, getUser);
+router.get('/me', verifyToken, getUser);
 
 export { router };
