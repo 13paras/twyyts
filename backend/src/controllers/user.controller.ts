@@ -4,6 +4,10 @@ import { asyncHandler } from '../utils/asyncHandler';
 import { updateBody } from '../utils/userValidation';
 import { CustomRequest } from '../middlewares/auth.middleware';
 import { Notification } from '../models/notification.model';
+import { uploadOnCloudinary } from '../utils/cloudinary';
+import { Request, Response } from 'express';
+
+// ! Update/add -> file upload function(logic) using multer
 
 // 'api/v1/user/profile/:username' => GET
 const getUserProfile = asyncHandler(async (req: CustomRequest, res, next) => {
@@ -139,7 +143,7 @@ const updateUser = asyncHandler(async (req: CustomRequest, res, next) => {
   const { fullName, username, email, currentPassword, newPassword, bio, link } =
     body;
 
-  let { profileImg, coverImg } = body;
+  const profileImgPath = req.file?.path as string;
 
   if (!validatedResult.success) {
     const error = createHttpError(401, validatedResult.error);
@@ -147,6 +151,7 @@ const updateUser = asyncHandler(async (req: CustomRequest, res, next) => {
   }
 
   try {
+    // console.log(body);
     let user = await User.findById(req.user?.id);
 
     if (!user) {
@@ -154,7 +159,10 @@ const updateUser = asyncHandler(async (req: CustomRequest, res, next) => {
       return next(error);
     }
 
-    if (!(currentPassword && newPassword)) {
+    if (
+      (!currentPassword && newPassword) ||
+      (currentPassword && !newPassword)
+    ) {
       const error = createHttpError(
         401,
         'Please provide both current password and new password'
@@ -162,26 +170,58 @@ const updateUser = asyncHandler(async (req: CustomRequest, res, next) => {
       return next(error);
     }
 
-    const isPasswordCorrect = await user.matchPassword(currentPassword);
+    let isPasswordCorrect;
+
+    if (currentPassword && newPassword) {
+      isPasswordCorrect = await user.matchPassword(currentPassword);
+    }
 
     if (!isPasswordCorrect) {
       const error = createHttpError(400, 'Invalid password');
       return next(error);
     }
 
-    user.password = newPassword;
+    if (newPassword) {
+      user.password = newPassword;
+    }
+
+    // const profileImage = await uploadOnCloudinary(profileImgPath);
+
+    // user.profileImg = profileImage?.url as string;
     user.fullName = fullName || user.fullName;
     user.username = username || user.username;
     user.email = email || user.email;
     user.bio = bio || user.bio;
     user.link = link || user.link;
 
+    // console.log(user);
+
     await user.save();
 
-    res.status(200).json({ message: 'User updated successfully', data: user });
+    res.status(200).json({
+      message: 'User updated successfully',
+      data: {
+        id: user._id,
+        fullName: user.fullName,
+        username: user.username,
+        email: user.email,
+        bio: user.bio,
+        link: user.link,
+      },
+    });
   } catch (error) {
     console.log(error);
   }
 });
+
+/* const updateProfileAndCoverImg = asyncHandler(async (req: CustomRequest, res, next) => {
+  try {
+    const profileImgFile = (req.files as { [fieldname: string]: Express.Multer.File[] })['profileImg'][0];
+
+  } catch (error) {
+    console.log(error)
+  }
+
+}) */
 
 export { getUserProfile, followUnfollowUser, updateUser, getSuggestedUsers };

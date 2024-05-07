@@ -6,7 +6,7 @@ import createHttpError from 'http-errors';
 import { config } from '../config/config';
 
 export interface CustomRequest extends Request {
-  user?: object | any;
+  user?: Object | any;
 }
 
 export const verifyToken = asyncHandler(
